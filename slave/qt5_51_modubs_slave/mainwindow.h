@@ -6,6 +6,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QTextStream>
 #include <QMessageBox>
+#include "Modbus/Modbus.h"
 
 namespace Ui {
 class MainWindow;
@@ -33,6 +34,9 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+public slots:
+    void Modbus_data_send(MB_BYTE_T *data, MB_BYTE_T length);
 
 private slots:
     void read_ser_port_data(void);

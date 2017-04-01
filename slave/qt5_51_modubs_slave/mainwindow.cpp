@@ -19,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_serial_port->setFlowControl(QSerialPort::NoFlowControl);
     update_ser_port_list();
 
+    MB_initSlave(0x01, Modbus_data_send);
+
     connect(m_serial_port,SIGNAL(readyRead()),this,SLOT(read_ser_port_data()));
     connect(ui->textBrowser_serial_data_dis,SIGNAL(textChanged()),this,SLOT(update_dis_message()));
     connect(ui->pushButton_port_sw,SIGNAL(clicked(bool)),this,SLOT(serial_port_switch()));
@@ -32,6 +34,32 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+/*************************************************************************************
+ * @brief    调用串口进行数据发送
+ * @version  V0.0.0
+ */
+void MainWindow::Modbus_data_send(MB_BYTE_T *data, MB_BYTE_T length){
+    MB_BYTE_T i;
+
+    m_ser_tx_data.clear();
+    for(i=0;i<length;i++){
+        m_ser_tx_data.append(data[i]);
+    }
+
+    if(m_serial_port->isOpen() == true){
+
+        qint64 bytesWritten = m_serial_port->write(m_ser_tx_data);
+
+        if (bytesWritten == -1) {
+            m_ser_std_utput << QObject::tr("Failed to write the data to port %1, error: %2").arg(m_serial_port->portName()).arg(m_serial_port->errorString()) << endl;
+            QCoreApplication::exit(1);
+        } else if (bytesWritten != m_ser_tx_data.size()) {
+            m_ser_std_utput << QObject::tr("Failed to write all the data to port %1, error: %2").arg(m_serial_port->portName()).arg(m_serial_port->errorString()) << endl;
+            QCoreApplication::exit(1);
+        }
+    }
+}
+
 /*************************************************************************************
  * @brief    更新可用的串口列表
  * @version  V0.0.0
