@@ -1,0 +1,8 @@
+#
+# gitignore file for qt project
+#
+# https://www.iar.com/support/tech-notes/ide/which-files-should-be-version-controlled/
+#
+
+# IAR Debug
+**/build/
